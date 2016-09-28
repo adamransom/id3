@@ -1,0 +1,10 @@
+[package]
+name = "id3"
+version = "0.1.0"
+authors = ["Adam Ransom"]
+
+[lib]
+name = "id3"
+path = "src/lib.rs"
+
+[dependencies]
