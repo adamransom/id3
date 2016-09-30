@@ -1,7 +1,10 @@
-use std::io;
 use std::io::{Read, BufReader};
 
-#[derive(Debug)]
+mod error;
+
+pub use self::error::HeaderError;
+
+#[derive(Debug, Default)]
 pub struct Version {
     pub major: u8,
     pub revision: u8,
@@ -14,7 +17,6 @@ pub struct Header {
     pub unsynchronisation: bool,
     pub extended: bool,
     pub experimental: bool,
-    pub has_footer: bool,
     pub size: u32,
 }
 
@@ -43,7 +45,6 @@ pub fn parse<R: Read>(reader: &mut BufReader<R>) -> Result<Header, io::Error> {
     set_unsynchronisation(&buf, &mut header);
     set_extended(&buf, &mut header);
     set_experimental(&buf, &mut header);
-    set_has_footer(&buf, &mut header);
     set_size(&buf, &mut header);
 
     return Ok(header);
@@ -69,10 +70,6 @@ fn set_extended(buf: &[u8; 10], header: &mut Header) {
 
 fn set_experimental(buf: &[u8; 10], header: &mut Header) {
     header.experimental = buf[5] & 0b00100000 > 0;
-}
-
-fn set_has_footer(buf: &[u8; 10], header: &mut Header) {
-    header.has_footer = buf[5] & 0b00010000 > 0;
 }
 
 fn set_size(buf: &[u8; 10], header: &mut Header) {
