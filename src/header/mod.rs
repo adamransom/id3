@@ -20,7 +20,7 @@ pub struct Header {
     pub size: u32,
 }
 
-pub fn parse<R: Read>(reader: &mut BufReader<R>) -> Result<Header, io::Error> {
+pub fn parse<R: Read>(reader: &mut BufReader<R>) -> Result<Header, HeaderError> {
     let mut buf = [0u8; 10];
     try!(reader.read_exact(&mut buf));
 
@@ -31,7 +31,7 @@ pub fn parse<R: Read>(reader: &mut BufReader<R>) -> Result<Header, io::Error> {
     set_unsynchronisation(&buf, &mut header);
     set_extended(&buf, &mut header);
     set_experimental(&buf, &mut header);
-    set_size(&buf, &mut header);
+    try!(set_size(&buf, &mut header));
 
     return Ok(header);
 }
@@ -58,11 +58,13 @@ fn set_experimental(buf: &[u8; 10], header: &mut Header) {
     header.experimental = buf[5] & 0b00100000 > 0;
 }
 
-fn set_size(buf: &[u8; 10], header: &mut Header) {
+fn set_size(buf: &[u8; 10], header: &mut Header) -> Result<u32, HeaderError> {
     use utils;
 
     header.size = match utils::synchsafe_to_u32(&buf[6..10]) {
         Some(int) => int,
         None => 0,
     };
+
+    return Err(HeaderError::InvalidSize(header.size));
 }

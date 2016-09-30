@@ -9,6 +9,6 @@ pub fn read<R: Read>(readable: R) {
 
     match header {
         Ok(header) => println!("{:?}", header),
-        Err(err) => println!("Error parsing header: {}", err),
+        Err(err) => println!("Error parsing header ({})", err),
     }
 }
