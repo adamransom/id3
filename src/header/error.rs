@@ -3,46 +3,46 @@ use std::fmt;
 use std::io;
 
 #[derive(Debug)]
-pub enum HeaderError {
+pub enum Error {
     InvalidSize,
     Io(io::Error),
     NotID3,
     UnknownFlag,
 }
 
-impl fmt::Display for HeaderError {
+impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            HeaderError::InvalidSize => write!(f, "Size must be greater than 0"),
-            HeaderError::Io(ref err) => write!(f, "IO error: {}", err),
-            HeaderError::NotID3 => write!(f, "Not an ID3 header"),
-            HeaderError::UnknownFlag => write!(f, "Unknown flag found"),
+            Error::InvalidSize => write!(f, "Size must be greater than 0"),
+            Error::Io(ref err) => write!(f, "IO error: {}", err),
+            Error::NotID3 => write!(f, "Not an ID3 header"),
+            Error::UnknownFlag => write!(f, "Unknown flag found"),
         }
     }
 }
 
-impl error::Error for HeaderError {
+impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            HeaderError::InvalidSize => "size must be greater than 0",
-            HeaderError::Io(ref err) => err.description(),
-            HeaderError::NotID3 => "not an ID3 header",
-            HeaderError::UnknownFlag => "unknown flag found",
+            Error::InvalidSize => "size must be greater than 0",
+            Error::Io(ref err) => err.description(),
+            Error::NotID3 => "not an ID3 header",
+            Error::UnknownFlag => "unknown flag found",
         }
     }
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
-            HeaderError::InvalidSize => None,
-            HeaderError::Io(ref err) => Some(err),
-            HeaderError::NotID3 => None,
-            HeaderError::UnknownFlag => None,
+            Error::InvalidSize => None,
+            Error::Io(ref err) => Some(err),
+            Error::NotID3 => None,
+            Error::UnknownFlag => None,
         }
     }
 }
 
-impl From<io::Error> for HeaderError {
-    fn from(err: io::Error) -> HeaderError {
-        HeaderError::Io(err)
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Error {
+        Error::Io(err)
     }
 }
