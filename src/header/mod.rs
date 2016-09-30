@@ -4,6 +4,16 @@ mod error;
 
 pub use self::error::HeaderError;
 
+bitflags! {
+    #[derive(Default)]
+    pub flags HeaderFlags: u8 {
+        const HEADER_UNSYNC = 0b10000000,
+        const HEADER_EXTENDED = 0b01000000,
+        const HEADER_EXPERIMENTAL = 0b00100000,
+        const HEADER_FOOTER = 0b00010000,
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct Version {
     pub major: u8,
@@ -12,59 +22,65 @@ pub struct Version {
 
 #[derive(Debug, Default)]
 pub struct Header {
-    pub valid: bool,
     pub version: Version,
-    pub unsynchronisation: bool,
-    pub extended: bool,
-    pub experimental: bool,
+    pub flags: HeaderFlags,
     pub size: u32,
 }
 
-pub fn parse<R: Read>(reader: &mut BufReader<R>) -> Result<Header, HeaderError> {
+type HeaderBytes = [u8; 10];
+type HeaderResult<T> = Result<T, HeaderError>;
+
+impl Header {
+    fn new_with_bytes(bytes: &HeaderBytes) -> HeaderResult<Header> {
+        let mut header: Self = Default::default();
+
+        header.set_version(bytes);
+        try!(header.set_size(bytes));
+        try!(header.set_flags(bytes));
+
+        Ok(header)
+    }
+
+    fn set_version(&mut self, bytes: &HeaderBytes) {
+        self.version.major = bytes[3];
+        self.version.revision = bytes[4];
+    }
+
+    fn set_size(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
+        use utils;
+
+        self.size = utils::synchsafe_to_u32(&bytes[6..10]).unwrap();
+
+        if self.size > 0 {
+            Ok(())
+        } else {
+            Err(HeaderError::InvalidSize)
+        }
+    }
+
+    fn set_flags(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
+        self.flags = match HeaderFlags::from_bits(bytes[5]) {
+            Some(flags) => flags,
+            None => return Err(HeaderError::UnknownFlag),
+        };
+
+        Ok(())
+    }
+}
+
+pub fn parse<R: Read>(reader: &mut BufReader<R>) -> HeaderResult<Header> {
     let mut bytes = [0u8; 10];
     try!(reader.read_exact(&mut bytes));
 
-    let mut header: Header = Default::default();
-
-    set_valid(&bytes, &mut header);
-    set_version(&bytes, &mut header);
-    set_unsynchronisation(&bytes, &mut header);
-    set_extended(&bytes, &mut header);
-    set_experimental(&bytes, &mut header);
-    try!(set_size(&bytes, &mut header));
-
-    return Ok(header);
+    if !is_valid(&bytes) {
+        Err(HeaderError::NotID3)
+    } else {
+        Header::new_with_bytes(&bytes)
+    }
 }
 
-fn set_valid(bytes: &[u8; 10], header: &mut Header) {
+fn is_valid(bytes: &HeaderBytes) -> bool {
     let identifier = &bytes[0..3];
-    header.valid = identifier == b"ID3";
-}
 
-fn set_version(bytes: &[u8; 10], header: &mut Header) {
-    header.version.major = bytes[3];
-    header.version.revision = bytes[4];
-}
-
-fn set_unsynchronisation(bytes: &[u8; 10], header: &mut Header) {
-    header.unsynchronisation = bytes[5] & 0b10000000 > 0;
-}
-
-fn set_extended(bytes: &[u8; 10], header: &mut Header) {
-    header.extended = bytes[5] & 0b01000000 > 0;
-}
-
-fn set_experimental(bytes: &[u8; 10], header: &mut Header) {
-    header.experimental = bytes[5] & 0b00100000 > 0;
-}
-
-fn set_size(bytes: &[u8; 10], header: &mut Header) -> Result<u32, HeaderError> {
-    use utils;
-
-    header.size = match utils::synchsafe_to_u32(&bytes[6..10]) {
-        Some(int) => int,
-        None => 0,
-    };
-
-    return Err(HeaderError::InvalidSize(header.size));
+    identifier == b"ID3"
 }

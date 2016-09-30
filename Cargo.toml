@@ -8,3 +8,4 @@ name = "id3"
 path = "src/lib.rs"
 
 [dependencies]
+bitflags = "0.7.0"

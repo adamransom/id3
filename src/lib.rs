@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate bitflags;
+
 use std::io::{Read, BufReader};
 
 pub mod header;
