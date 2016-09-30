@@ -1,6 +1,7 @@
 use std::io::{Read, BufReader};
 
 pub mod header;
+pub mod utils;
 
 pub fn read<R: Read>(readable: R) {
     let mut reader = BufReader::new(readable);

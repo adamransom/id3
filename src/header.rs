@@ -76,9 +76,10 @@ fn set_has_footer(buf: &[u8; 10], header: &mut Header) {
 }
 
 fn set_size(buf: &[u8; 10], header: &mut Header) {
-    header.size =
-        (buf[6] as u32) << 27 |
-        (buf[7] as u32) << 14 |
-        (buf[8] as u32) << 7  |
-        (buf[9] as u32);
+    use utils;
+
+    header.size = match utils::synchsafe_to_u32(&buf[6..10]) {
+        Some(int) => int,
+        None => 0,
+    };
 }
