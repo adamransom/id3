@@ -15,6 +15,7 @@
 /// let integer = synchsafe_to_u32(&synchsafe);
 /// assert_eq!(integer, Some(0b00111111_11111111));
 /// ```
+#[cfg_attr(rustfmt, rustfmt_skip)]
 pub fn synchsafe_to_u32(buf: &[u8]) -> Option<u32> {
     if buf.len() == 4 {
         Some(
