@@ -10,7 +10,7 @@ pub struct Version {
     pub revision: u8,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Header {
     pub valid: bool,
     pub version: Version,
@@ -20,25 +20,11 @@ pub struct Header {
     pub size: u32,
 }
 
-impl Header {
-    fn new() -> Header {
-        Header {
-            valid: false,
-            version: Version { major: 0, revision: 0 },
-            unsynchronisation: false,
-            extended: false,
-            experimental: false,
-            has_footer: false,
-            size: 0,
-        }
-    }
-}
-
 pub fn parse<R: Read>(reader: &mut BufReader<R>) -> Result<Header, io::Error> {
     let mut buf = [0u8; 10];
     try!(reader.read_exact(&mut buf));
 
-    let mut header = Header::new();
+    let mut header: Header = Default::default();
 
     set_valid(&buf, &mut header);
     set_version(&buf, &mut header);
