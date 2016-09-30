@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["HeaderError",""]],"fn":[["parse",""]],"struct":[["Header",""],["Version",""]]});
+initSidebarItems({"enum":[["Error",""]],"fn":[["parse",""]],"struct":[["Header",""],["HeaderFlags",""],["Version",""]]});
