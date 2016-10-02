@@ -5,6 +5,7 @@ use std::io;
 #[derive(Debug)]
 pub enum Error {
     InvalidSize,
+    InvalidVersion,
     Io(io::Error),
     NotID3,
     UnknownFlag,
@@ -13,7 +14,8 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Error::InvalidSize => write!(f, "Size must be greater than 0"),
+            Error::InvalidSize => write!(f, "Size must be greater than 0 and less than 268435456"),
+            Error::InvalidVersion => write!(f, "Major and revision versions must be less than 255"),
             Error::Io(ref err) => write!(f, "IO error: {}", err),
             Error::NotID3 => write!(f, "Not an ID3 header"),
             Error::UnknownFlag => write!(f, "Unknown flag found"),
@@ -24,7 +26,8 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::InvalidSize => "size must be greater than 0",
+            Error::InvalidSize => "size must be greater than 0 and less than 268435456",
+            Error::InvalidVersion => "major and revision versions must be less than 255",
             Error::Io(ref err) => err.description(),
             Error::NotID3 => "not an ID3 header",
             Error::UnknownFlag => "unknown flag found",
@@ -34,6 +37,7 @@ impl error::Error for Error {
     fn cause(&self) -> Option<&error::Error> {
         match *self {
             Error::InvalidSize => None,
+            Error::InvalidVersion => None,
             Error::Io(ref err) => Some(err),
             Error::NotID3 => None,
             Error::UnknownFlag => None,

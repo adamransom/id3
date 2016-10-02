@@ -25,24 +25,30 @@ impl Header {
     pub fn new_with_bytes(bytes: &HeaderBytes) -> HeaderResult<Header> {
         let mut header: Self = Default::default();
 
-        header.set_version(bytes);
+        try!(header.set_version(bytes));
         try!(header.set_size(bytes));
         try!(header.set_flags(bytes));
 
         Ok(header)
     }
 
-    fn set_version(&mut self, bytes: &HeaderBytes) {
+    fn set_version(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
         self.version.major = bytes[3];
         self.version.revision = bytes[4];
+
+        if self.version.major < 0xFF && self.version.revision < 0xFF {
+            Ok(())
+        } else {
+            Err(Error::InvalidVersion)
+        }
     }
 
     fn set_size(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
         use utils;
 
-        self.size = utils::synchsafe_to_u32(&bytes[6..10]).unwrap();
+        self.size = utils::synchsafe_to_u32(&bytes[6..10]).unwrap_or(0);
 
-        if self.size > 0 {
+        if self.size > 0 && self.size < 0x1000_0000 {
             Ok(())
         } else {
             Err(Error::InvalidSize)
