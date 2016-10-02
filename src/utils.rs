@@ -1,7 +1,4 @@
-/// Converts from 'synchsafe' integers to regular integers. See
-/// [ID3v2.4 Informal Standard (Section 6.4)][1] for more information.
-///
-/// [1]: http://id3.org/id3v2.4.0-structure
+/// Converts from 'synchsafe' integers to regular integers
 ///
 /// `synchsafe_to_u32` will return `None` if the length of `bytes` is not `4`.
 ///
@@ -19,6 +16,10 @@
 ///
 /// assert_eq!(integer.unwrap(), 0b11111111_11111111);
 /// ```
+///
+/// # Reference
+///
+/// [ID3v2.4 Informal Standard (Section 6.4)](http://id3.org/id3v2.4.0-structure)
 #[cfg_attr(rustfmt, rustfmt_skip)]
 pub fn synchsafe_to_u32(bytes: &[u8]) -> Option<u32> {
     if bytes.len() == 4 {

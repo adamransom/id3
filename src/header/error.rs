@@ -2,12 +2,19 @@ use std::error;
 use std::fmt;
 use std::io;
 
+/// A list specifying the errors that can be encountered when constructing a header from an array
+/// of bytes.
 #[derive(Debug)]
 pub enum Error {
+    /// The size was either 0 or greater than 268435455.
     InvalidSize,
+    /// Either of the versions were 255.
     InvalidVersion,
+    /// An error occurred whilst reading the bytes.
     Io(io::Error),
+    /// The tag is not an ID3v2 tag.
     NotID3,
+    /// An unknown header flag was encountered.
     UnknownFlag,
 }
 
