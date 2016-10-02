@@ -32,6 +32,7 @@ pub type HeaderResult<T> = Result<T, Error>;
 /// [ID3 tag version 2.3.0](http://id3.org/id3v2.3.0#ID3v2_header)
 #[derive(Debug, Default)]
 pub struct Header {
+    pub identifier: [u8; 3],
     /// The version of the ID3v2 tag.
     pub version: Version,
     /// The flags set for the tag.
@@ -58,11 +59,22 @@ impl Header {
     pub fn new_with_bytes(bytes: &HeaderBytes) -> HeaderResult<Header> {
         let mut header: Self = Default::default();
 
+        try!(header.set_identifier(bytes));
         try!(header.set_version(bytes));
         try!(header.set_size(bytes));
         try!(header.set_flags(bytes));
 
         Ok(header)
+    }
+
+    fn set_identifier(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
+        self.identifier = [bytes[0], bytes[1], bytes[2]];
+
+        if &self.identifier != b"ID3" {
+            Err(Error::InvalidIdentifier)
+        } else {
+            Ok(())
+        }
     }
 
     fn set_version(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
