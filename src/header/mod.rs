@@ -81,7 +81,7 @@ impl Header {
     }
 
     /// Read and return 10 bytes from the reader.
-    fn read<R: Read>(reader: &mut R) -> HeaderResult<[u8; 10]> {
+    fn read<R: Read>(reader: &mut R) -> HeaderResult<HeaderBytes> {
         let mut bytes = [0u8; 10];
         try!(reader.read_exact(&mut bytes));
 
