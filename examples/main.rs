@@ -4,14 +4,21 @@ use std::error::Error;
 use std::fs::File;
 use std::path::Path;
 
+use id3::tag::Tag;
+
 fn main() {
     let path = Path::new("examples/test.mp3");
     let display = path.display();
 
-    let file = match File::open(&path) {
+    let mut file = match File::open(&path) {
         Ok(file) => file,
         Err(why) => panic!("Couldn't open {}: {}", display, why.description()),
     };
 
-    id3::read(file);
+    let tag = Tag::from_reader(&mut file);
+
+    match tag {
+        Ok(tag) => println!("{:?}", tag),
+        Err(err) => println!("{}", err),
+    }
 }
