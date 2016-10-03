@@ -1,3 +1,5 @@
+//! Types, structs and functions related to reading an ID3v2 tag header.
+
 use std::io::Read;
 
 pub use self::error::Error;
@@ -28,13 +30,14 @@ bitflags! {
 }
 
 pub type HeaderBytes = [u8; 10];
+/// A specialised `Result` type for header reading operations.
 pub type HeaderResult<T> = Result<T, Error>;
 
 /// A type representing the header of an ID3v2 tag.
 ///
 /// # Reference
 ///
-/// [ID3 tag version 2.3.0](http://id3.org/id3v2.3.0#ID3v2_header)
+/// [ID3v2.3 Informal Standard (Section 3.1)](http://id3.org/id3v2.3.0#ID3v2_header)
 #[derive(Debug, Default)]
 pub struct Header {
     /// The file identifier (currently always "ID3").
