@@ -47,29 +47,27 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-273' class='srclink' href='../../src/id3/src/header/header.rs.html#34-42' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-357' class='srclink' href='../../src/id3/src/header/mod.rs.html#32-37' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Header {
-    pub version: <a class='struct' href='../../id3/header/struct.Version.html' title='id3::header::Version'>Version</a>,
-    pub flags: <a class='struct' href='../../id3/header/struct.HeaderFlags.html' title='id3::header::HeaderFlags'>HeaderFlags</a>,
-    pub size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>,
+    // some fields omitted
 }</pre><div class='docblock'><p>A type representing the header of an ID3v2 tag.</p>
 
 <h1 id='reference' class='section-header'><a href='#reference'>Reference</a></h1>
-<p><a href="http://id3.org/id3v2.3.0#ID3v2_header">ID3 tag version 2.3.0</a></p>
-</div><h2 class='fields'>Fields</h2><span id='structfield.version' class='structfield'><code>version: <a class='struct' href='../../id3/header/struct.Version.html' title='id3::header::Version'>Version</a></code>
-                           </span><span class='stab '></span><div class='docblock'><p>The version of the ID3v2 tag.</p>
-</div><span id='structfield.flags' class='structfield'><code>flags: <a class='struct' href='../../id3/header/struct.HeaderFlags.html' title='id3::header::HeaderFlags'>HeaderFlags</a></code>
-                           </span><span class='stab '></span><div class='docblock'><p>The flags set for the tag.</p>
-</div><span id='structfield.size' class='structfield'><code>size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code>
-                           </span><span class='stab '></span><div class='docblock'><p>The size of the tag (not including the header or footer). This must be greater than 0 and
-less than 268435456.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-277' class='srclink' href='../../src/id3/src/header/header.rs.html#44-99' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new_with_bytes' class='method'><code>fn <a href='#method.new_with_bytes' class='fnname'>new_with_bytes</a>(bytes: &amp;HeaderBytes) -&gt; HeaderResult&lt;<a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a>&gt;</code></h4>
-<div class='docblock'><p>Construct a new header with specified bytes.</p>
+<p><a href="http://id3.org/id3v2.3.0#ID3v2_header">ID3v2.3 Informal Standard (Section 3.1)</a></p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-363' class='srclink' href='../../src/id3/src/header/mod.rs.html#39-166' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from_reader' class='method'><code>fn <a href='#method.from_reader' class='fnname'>from_reader</a>&lt;R:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>&gt;(reader: &amp;mut R) -&gt; <a class='type' href='../../id3/header/type.Result.html' title='id3::header::Result'>Result</a>&lt;<a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a>&gt;</code></h4>
+<div class='docblock'><p>Construct a new header from a reader.</p>
 
-<p>The header is made up of 10 bytes, so that is all the constructor will accept.</p>
+<h1 id='guarantees' class='section-header'><a href='#guarantees'>Guarantees</a></h1>
+<p>This function will only ever read 10 bytes from the reader.</p>
 
 <h1 id='errors' class='section-header'><a href='#errors'>Errors</a></h1>
+<p>If there is an error reading the bytes from the reader, then this function will return
+<code>Error::Io</code>.</p>
+
+<p>If the file identifier is incorrect (must be &quot;ID3&quot;), then this function will return
+<code>Error::InvalidIdentifier</code>.</p>
+
 <p>If there is an invalid version (neither versions can be 255), then this function will
 return <code>Error::InvalidVersion</code>.</p>
 
@@ -77,10 +75,28 @@ return <code>Error::InvalidVersion</code>.</p>
 function will return <code>Error::InvalidSize</code>.</p>
 
 <p>If there is an unrecognized flag, then this function will return <code>Error::UnknownFlag</code>.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-263' class='srclink' href='../../src/id3/src/header/header.rs.html#33' title='goto source code'>[src]</a></span></h3>
+</div><h4 id='method.identifier' class='method'><code>fn <a href='#method.identifier' class='fnname'>identifier</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>; 3]</a></code></h4>
+<div class='docblock'><p>Gets the file identifier (currently always &quot;ID3&quot;).</p>
+</div><h4 id='method.version' class='method'><code>fn <a href='#method.version' class='fnname'>version</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../id3/header/struct.Version.html' title='id3::header::Version'>Version</a></code></h4>
+<div class='docblock'><p>Gets the version of the ID3v2 tag.</p>
+</div><h4 id='method.size' class='method'><code>fn <a href='#method.size' class='fnname'>size</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<div class='docblock'><p>Gets the size of the tag (not including the header or footer). This will always be
+greater than 0 and less than 268435456.</p>
+</div><h4 id='method.is_unsynchronized' class='method'><code>fn <a href='#method.is_unsynchronized' class='fnname'>is_unsynchronized</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gets whether or not unsynchronization is used.</p>
+</div><h4 id='method.has_extended_header' class='method'><code>fn <a href='#method.has_extended_header' class='fnname'>has_extended_header</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gets whether or not the header is followed by an extended header.</p>
+</div><h4 id='method.is_experimental' class='method'><code>fn <a href='#method.is_experimental' class='fnname'>is_experimental</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gets whether or not the tag is in an experimental stage.</p>
+</div><h4 id='method.has_footer' class='method'><code>fn <a href='#method.has_footer' class='fnname'>has_footer</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gets whether or not the tag has a footer.</p>
+
+<p>Since this library only supports <code>v2.3.0</code>, a <code>v2.4.0</code> footer will never be parsed, but we
+need to know one exists so it can be safely skipped.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-346' class='srclink' href='../../src/id3/src/header/mod.rs.html#31' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a></code></h4>
 <div class='docblock'><p>Returns the &quot;default value&quot; for a type. <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Read more</a></p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-265' class='srclink' href='../../src/id3/src/header/header.rs.html#33' title='goto source code'>[src]</a></span></h3>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-348' class='srclink' href='../../src/id3/src/header/mod.rs.html#31' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 <div class='docblock'><p>Formats the value using the given formatter.</p>
 </div></div></section>

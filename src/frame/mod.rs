@@ -3,11 +3,12 @@
 use std::io::Read;
 use std::result;
 
-pub use self::error::Error;
-pub use self::header::Header;
+use self::header::Header;
 
-mod header;
+pub use self::error::Error;
+
 mod error;
+pub mod header;
 
 /// A specialised `Result` type for frame reading operations.
 pub type Result<T> = result::Result<T, Error>;

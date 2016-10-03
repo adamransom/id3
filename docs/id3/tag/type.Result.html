@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `read` fn in crate `id3`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, read">
+    <meta name="description" content="API documentation for the Rust `Result` type in crate `id3`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Result">
 
-    <title>id3::read - Rust</title>
+    <title>id3::tag::Result - Rust</title>
 
-    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
     
 
     
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='index.html'>id3</a></p><script>window.sidebarCurrent = {name: 'read', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>id3</a>::<wbr><a href='index.html'>tag</a></p><script>window.sidebarCurrent = {name: 'Result', ty: 'type', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,13 +42,14 @@
         </form>
     </nav>
 
-    <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>id3</a>::<wbr><a class='fn' href=''>read</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content type">
+<h1 class='fqn'><span class='in-band'><a href='../index.html'>id3</a>::<wbr><a href='index.html'>tag</a>::<wbr><a class='type' href=''>Result</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-325' class='srclink' href='../src/id3/src/lib.rs.html#9-17' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn read&lt;R:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>&gt;(readable: R)</pre></section>
+               </span><a id='src-55' class='srclink' href='../../src/id3/src/tag/mod.rs.html#15' title='goto source code'>[src]</a></span></h1>
+<pre class='rust typedef'>type Result&lt;T&gt; = <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;T,&nbsp;<a class='enum' href='../../id3/tag/enum.Error.html' title='id3::tag::Error'>Error</a>&gt;;</pre><div class='docblock'><p>A specialised <code>Result</code> type for tag reading operations.</p>
+</div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -102,13 +103,13 @@
     
 
     <script>
-        window.rootPath = "../";
+        window.rootPath = "../../";
         window.currentCrate = "id3";
         window.playgroundUrl = "";
     </script>
-    <script src="../jquery.js"></script>
-    <script src="../main.js"></script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
     
-    <script defer src="../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

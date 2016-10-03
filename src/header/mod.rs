@@ -1,6 +1,7 @@
 //! Types, structs and functions related to reading an ID3v2 tag header.
 
 use std::io::Read;
+use std::result;
 
 pub use self::error::Error;
 pub use self::version::Version;
@@ -11,16 +12,16 @@ mod version;
 bitflags! {
     #[derive(Default)]
     flags HeaderFlags: u8 {
-        const HEADER_UNSYNC = 0b10000000,
-        const HEADER_EXTENDED = 0b01000000,
-        const HEADER_EXPERIMENTAL = 0b00100000,
-        const HEADER_FOOTER = 0b00010000,
+        const HEADER_UNSYNC = 0b1000_0000,
+        const HEADER_EXTENDED = 0b0100_0000,
+        const HEADER_EXPERIMENTAL = 0b0010_0000,
+        const HEADER_FOOTER = 0b0001_0000,
     }
 }
 
 type HeaderBytes = [u8; 10];
 /// A specialised `Result` type for header reading operations.
-pub type HeaderResult<T> = Result<T, Error>;
+pub type Result<T> = result::Result<T, Error>;
 
 /// A type representing the header of an ID3v2 tag.
 ///
@@ -57,7 +58,7 @@ impl Header {
     /// function will return `Error::InvalidSize`.
     ///
     /// If there is an unrecognized flag, then this function will return `Error::UnknownFlag`.
-    pub fn from_reader<R: Read>(reader: &mut R) -> HeaderResult<Header> {
+    pub fn from_reader<R: Read>(reader: &mut R) -> Result<Header> {
         let mut header: Self = Default::default();
 
         let bytes = try!(Header::read(reader));
@@ -110,7 +111,7 @@ impl Header {
     }
 
     /// Read and return 10 bytes from the reader.
-    fn read<R: Read>(reader: &mut R) -> HeaderResult<HeaderBytes> {
+    fn read<R: Read>(reader: &mut R) -> Result<HeaderBytes> {
         let mut bytes = [0u8; 10];
         try!(reader.read_exact(&mut bytes));
 
@@ -118,7 +119,7 @@ impl Header {
     }
 
     /// Set the file identifier (currently always "ID3").
-    fn set_identifier(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
+    fn set_identifier(&mut self, bytes: &HeaderBytes) -> Result<()> {
         self.identifier = [bytes[0], bytes[1], bytes[2]];
 
         if &self.identifier != b"ID3" {
@@ -129,7 +130,7 @@ impl Header {
     }
 
     /// Set the major and revision versions.
-    fn set_version(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
+    fn set_version(&mut self, bytes: &HeaderBytes) -> Result<()> {
         self.version.major = bytes[3];
         self.version.revision = bytes[4];
 
@@ -141,7 +142,7 @@ impl Header {
     }
 
     /// Set the tag size (not including header, or footer if present).
-    fn set_size(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
+    fn set_size(&mut self, bytes: &HeaderBytes) -> Result<()> {
         use utils;
 
         self.size = utils::synchsafe_to_u32(&bytes[6..10]).unwrap_or(0);
@@ -154,7 +155,7 @@ impl Header {
     }
 
     /// Set the flags of the tag.
-    fn set_flags(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
+    fn set_flags(&mut self, bytes: &HeaderBytes) -> Result<()> {
         self.flags = match HeaderFlags::from_bits(bytes[5]) {
             Some(flags) => flags,
             None => return Err(Error::UnknownFlag),

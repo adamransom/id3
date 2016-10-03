@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `parse` fn in crate `id3`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, parse">
+    <meta name="description" content="Source to the Rust file `src/header/version.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
-    <title>id3::header::parse - Rust</title>
+    <title>version.rs.html -- source</title>
 
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../../main.css">
     
 
     
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>id3</a>::<wbr><a href='index.html'>header</a></p><script>window.sidebarCurrent = {name: 'parse', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        
     </nav>
 
     <nav class="sub">
@@ -42,13 +42,25 @@
         </form>
     </nav>
 
-    <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>id3</a>::<wbr><a href='index.html'>header</a>::<wbr><a class='fn' href=''>parse</a></span><span class='out-of-band'><span id='render-detail'>
-                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                       [<span class='inner'>&#x2212;</span>]
-                   </a>
-               </span><a id='src-312' class='srclink' href='../../src/id3/src/header/mod.rs.html#15-24' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn parse&lt;R:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>&gt;(reader: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/std/io/buffered/struct.BufReader.html' title='std::io::buffered::BufReader'>BufReader</a>&lt;R&gt;) -&gt; HeaderResult&lt;<a class='struct' href='../../id3/header/struct.Header.html' title='id3::header::Header'>Header</a>&gt;</pre></section>
+    <section id='main' class="content source"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+</pre><pre class='rust '>
+<span class='doccomment'>/// A type representing the version of an ID3v2 tag.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Default</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Version</span> {
+    <span class='doccomment'>/// The major version. Currently only 3 is supported. _It must be less than 255._</span>
+    <span class='kw'>pub</span> <span class='ident'>major</span>: <span class='ident'>u8</span>,
+    <span class='doccomment'>/// The revision version. All revisions are backwards compatible. _It must be less than 255._</span>
+    <span class='kw'>pub</span> <span class='ident'>revision</span>: <span class='ident'>u8</span>,
+}
+</pre>
+</section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -102,13 +114,13 @@
     
 
     <script>
-        window.rootPath = "../../";
+        window.rootPath = "../../../../";
         window.currentCrate = "id3";
         window.playgroundUrl = "";
     </script>
-    <script src="../../jquery.js"></script>
-    <script src="../../main.js"></script>
+    <script src="../../../../jquery.js"></script>
+    <script src="../../../../main.js"></script>
     
-    <script defer src="../../search-index.js"></script>
+    <script defer src="../../../../search-index.js"></script>
 </body>
 </html>

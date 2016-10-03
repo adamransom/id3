@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["read",""]],"mod":[["header",""],["utils",""]]});
+initSidebarItems({"mod":[["frame","Types, structs and functions related to reading a frame from an ID3v2 tag."],["header","Types, structs and functions related to reading an ID3v2 tag header."],["tag","Types, structs and functions related to reading an ID3v2 tag."],["utils","Utilities related to reading ID3v2 tags."]]});

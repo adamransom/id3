@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/header/error.rs`.">
+    <meta name="description" content="Source to the Rust file `src/tag/error.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>error.rs.html -- source</title>
@@ -92,42 +92,26 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
 
-<span class='doccomment'>/// A list specifying the errors that can be encountered when constructing a header from a reader.</span>
+<span class='kw'>use</span> <span class='ident'>header</span>;
+<span class='kw'>use</span> <span class='ident'>frame</span>;
+
+<span class='doccomment'>/// A list specifying the errors that can be encountered when constructing a tag from a reader.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Error</span> {
-    <span class='doccomment'>/// The tag is not an ID3v2 tag.</span>
-    <span class='ident'>InvalidIdentifier</span>,
-    <span class='doccomment'>/// The size was either 0 or greater than 268435455.</span>
-    <span class='ident'>InvalidSize</span>,
-    <span class='doccomment'>/// Either of the versions were 255.</span>
-    <span class='ident'>InvalidVersion</span>,
-    <span class='doccomment'>/// An error occurred whilst reading the bytes.</span>
-    <span class='ident'>Io</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>),
-    <span class='doccomment'>/// An unknown header flag was encountered.</span>
-    <span class='ident'>UnknownFlag</span>,
+    <span class='doccomment'>/// There was an error reading the header</span>
+    <span class='ident'>Header</span>(<span class='ident'>header</span>::<span class='ident'>Error</span>),
+    <span class='ident'>Frame</span>(<span class='ident'>frame</span>::<span class='ident'>Error</span>),
 }
 
 <span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Error</span>::<span class='ident'>InvalidIdentifier</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Not an ID3 identifier&quot;</span>),
-            <span class='ident'>Error</span>::<span class='ident'>InvalidSize</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Size must be greater than 0 and less than 268435456&quot;</span>),
-            <span class='ident'>Error</span>::<span class='ident'>InvalidVersion</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Major and revision versions must be less than 255&quot;</span>),
-            <span class='ident'>Error</span>::<span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;IO error: {}&quot;</span>, <span class='ident'>err</span>),
-            <span class='ident'>Error</span>::<span class='ident'>UnknownFlag</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Unknown flag found&quot;</span>),
+            <span class='ident'>Error</span>::<span class='ident'>Header</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Header error: {}&quot;</span>, <span class='ident'>err</span>),
+            <span class='ident'>Error</span>::<span class='ident'>Frame</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Frame error: {}&quot;</span>, <span class='ident'>err</span>),
         }
     }
 }
@@ -135,28 +119,28 @@
 <span class='kw'>impl</span> <span class='ident'>error</span>::<span class='ident'>Error</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
     <span class='kw'>fn</span> <span class='ident'>description</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>str</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Error</span>::<span class='ident'>InvalidIdentifier</span> <span class='op'>=&gt;</span> <span class='string'>&quot;not an ID3 identifier&quot;</span>,
-            <span class='ident'>Error</span>::<span class='ident'>InvalidSize</span> <span class='op'>=&gt;</span> <span class='string'>&quot;size must be greater than 0 and less than 268435456&quot;</span>,
-            <span class='ident'>Error</span>::<span class='ident'>InvalidVersion</span> <span class='op'>=&gt;</span> <span class='string'>&quot;major and revision versions must be less than 255&quot;</span>,
-            <span class='ident'>Error</span>::<span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>description</span>(),
-            <span class='ident'>Error</span>::<span class='ident'>UnknownFlag</span> <span class='op'>=&gt;</span> <span class='string'>&quot;unknown flag found&quot;</span>,
+            <span class='ident'>Error</span>::<span class='ident'>Header</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>description</span>(),
+            <span class='ident'>Error</span>::<span class='ident'>Frame</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>description</span>(),
         }
     }
 
     <span class='kw'>fn</span> <span class='ident'>cause</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>error</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Error</span>::<span class='ident'>InvalidIdentifier</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-            <span class='ident'>Error</span>::<span class='ident'>InvalidSize</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-            <span class='ident'>Error</span>::<span class='ident'>InvalidVersion</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-            <span class='ident'>Error</span>::<span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>err</span>),
-            <span class='ident'>Error</span>::<span class='ident'>UnknownFlag</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
+            <span class='ident'>Error</span>::<span class='ident'>Header</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>err</span>),
+            <span class='ident'>Error</span>::<span class='ident'>Frame</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>err</span>),
         }
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>io</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>err</span>: <span class='ident'>io</span>::<span class='ident'>Error</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> {
-        <span class='ident'>Error</span>::<span class='ident'>Io</span>(<span class='ident'>err</span>)
+<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>header</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>err</span>: <span class='ident'>header</span>::<span class='ident'>Error</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> {
+        <span class='ident'>Error</span>::<span class='ident'>Header</span>(<span class='ident'>err</span>)
+    }
+}
+
+<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>frame</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>err</span>: <span class='ident'>frame</span>::<span class='ident'>Error</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> {
+        <span class='ident'>Error</span>::<span class='ident'>Frame</span>(<span class='ident'>err</span>)
     }
 }
 </pre>

@@ -10,18 +10,18 @@ mod error;
 bitflags! {
     #[derive(Default)]
     flags StatusFlags: u8 {
-        const STATUS_TAG_PRESERVE = 0b10000000,
-        const STATUS_FILE_PRESERVE = 0b01000000,
-        const STATUS_READ_ONLY = 0b00100000,
+        const STATUS_TAG_PRESERVE = 0b1000_0000,
+        const STATUS_FILE_PRESERVE = 0b0100_0000,
+        const STATUS_READ_ONLY = 0b0010_0000,
     }
 }
 
 bitflags! {
     #[derive(Default)]
     flags EncodingFlags: u8 {
-        const ENCODING_COMPRESSION = 0b10000000,
-        const ENCODING_ENCRYPTION = 0b01000000,
-        const ENCODING_GROUPING = 0b00100000,
+        const ENCODING_COMPRESSION = 0b1000_0000,
+        const ENCODING_ENCRYPTION = 0b0100_0000,
+        const ENCODING_GROUPING = 0b0010_0000,
     }
 }
 
@@ -71,7 +71,7 @@ impl Header {
         Ok(header)
     }
 
-    /// Gets the file identifier (currently always "ID3").
+    /// Gets the frame ID (made out of the characters capital A-Z and 0-9).
     pub fn frame_id(&self) -> &[u8; 4] {
         &self.frame_id
     }

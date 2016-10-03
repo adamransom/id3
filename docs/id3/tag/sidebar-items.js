@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error","A list specifying the errors that can be encountered when constructing a tag from a reader."]],"struct":[["Tag","A type representing an ID3v2 tag."]],"type":[["Result","A specialised `Result` type for tag reading operations."]]});

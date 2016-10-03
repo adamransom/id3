@@ -2,8 +2,7 @@ use std::error;
 use std::fmt;
 use std::io;
 
-/// A list specifying the errors that can be encountered when constructing a header from an array
-/// of bytes.
+/// A list specifying the errors that can be encountered when constructing a header from a reader.
 #[derive(Debug)]
 pub enum Error {
     /// The tag is not an ID3v2 tag.

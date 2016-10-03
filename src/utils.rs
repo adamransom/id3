@@ -1,3 +1,5 @@
+//! Utilities related to reading ID3v2 tags.
+
 /// Converts from 'synchsafe' integers to regular integers
 ///
 /// `synchsafe_to_u32` will return `None` if the length of `bytes` is not `4`.

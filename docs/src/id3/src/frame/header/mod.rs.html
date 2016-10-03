@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/header/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `src/frame/header/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
 
-    <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../../../main.css">
     
 
     
@@ -207,48 +207,53 @@
 <span id="163">163</span>
 <span id="164">164</span>
 <span id="165">165</span>
-<span id="166">166</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Types, structs and functions related to reading an ID3v2 tag header.</span>
+<span class='doccomment'>//! Types, structs and functions related to reading the header of a frame in an ID3v2 tag.</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Read</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>error</span>::<span class='ident'>Error</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>version</span>::<span class='ident'>Version</span>;
 
 <span class='kw'>mod</span> <span class='ident'>error</span>;
-<span class='kw'>mod</span> <span class='ident'>version</span>;
 
 <span class='macro'>bitflags</span><span class='macro'>!</span> {
     <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
-    <span class='ident'>flags</span> <span class='ident'>HeaderFlags</span>: <span class='ident'>u8</span> {
-        <span class='kw'>const</span> <span class='ident'>HEADER_UNSYNC</span> <span class='op'>=</span> <span class='number'>0b1000_0000</span>,
-        <span class='kw'>const</span> <span class='ident'>HEADER_EXTENDED</span> <span class='op'>=</span> <span class='number'>0b0100_0000</span>,
-        <span class='kw'>const</span> <span class='ident'>HEADER_EXPERIMENTAL</span> <span class='op'>=</span> <span class='number'>0b0010_0000</span>,
-        <span class='kw'>const</span> <span class='ident'>HEADER_FOOTER</span> <span class='op'>=</span> <span class='number'>0b0001_0000</span>,
+    <span class='ident'>flags</span> <span class='ident'>StatusFlags</span>: <span class='ident'>u8</span> {
+        <span class='kw'>const</span> <span class='ident'>STATUS_TAG_PRESERVE</span> <span class='op'>=</span> <span class='number'>0b1000_0000</span>,
+        <span class='kw'>const</span> <span class='ident'>STATUS_FILE_PRESERVE</span> <span class='op'>=</span> <span class='number'>0b0100_0000</span>,
+        <span class='kw'>const</span> <span class='ident'>STATUS_READ_ONLY</span> <span class='op'>=</span> <span class='number'>0b0010_0000</span>,
+    }
+}
+
+<span class='macro'>bitflags</span><span class='macro'>!</span> {
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
+    <span class='ident'>flags</span> <span class='ident'>EncodingFlags</span>: <span class='ident'>u8</span> {
+        <span class='kw'>const</span> <span class='ident'>ENCODING_COMPRESSION</span> <span class='op'>=</span> <span class='number'>0b1000_0000</span>,
+        <span class='kw'>const</span> <span class='ident'>ENCODING_ENCRYPTION</span> <span class='op'>=</span> <span class='number'>0b0100_0000</span>,
+        <span class='kw'>const</span> <span class='ident'>ENCODING_GROUPING</span> <span class='op'>=</span> <span class='number'>0b0010_0000</span>,
     }
 }
 
 <span class='kw'>type</span> <span class='ident'>HeaderBytes</span> <span class='op'>=</span> [<span class='ident'>u8</span>; <span class='number'>10</span>];
-<span class='doccomment'>/// A specialised `Result` type for header reading operations.</span>
+<span class='doccomment'>/// A specialised `Result` type for frame header reading operations.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>result</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>Error</span><span class='op'>&gt;</span>;
 
-<span class='doccomment'>/// A type representing the header of an ID3v2 tag.</span>
+<span class='doccomment'>/// A type representing the header of a frame in an ID3v2 tag.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # Reference</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// [ID3v2.3 Informal Standard (Section 3.1)](http://id3.org/id3v2.3.0#ID3v2_header)</span>
+<span class='doccomment'>/// [ID3v2.3 Informal Standard (Section 3.3)](http://id3.org/id3v2.3.0#ID3v2_frame_overview)</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Default</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Header</span> {
-    <span class='ident'>identifier</span>: [<span class='ident'>u8</span>; <span class='number'>3</span>],
-    <span class='ident'>version</span>: <span class='ident'>Version</span>,
-    <span class='ident'>flags</span>: <span class='ident'>HeaderFlags</span>,
+    <span class='ident'>frame_id</span>: [<span class='ident'>u8</span>; <span class='number'>4</span>],
     <span class='ident'>size</span>: <span class='ident'>u32</span>,
+    <span class='ident'>status_flags</span>: <span class='ident'>StatusFlags</span>,
+    <span class='ident'>encoding_flags</span>: <span class='ident'>EncodingFlags</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>Header</span> {
-    <span class='doccomment'>/// Construct a new header from a reader.</span>
+    <span class='doccomment'>/// Construct a new frame header from a reader.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// # Guarantees</span>
     <span class='doccomment'>///</span>
@@ -259,14 +264,8 @@
     <span class='doccomment'>/// If there is an error reading the bytes from the reader, then this function will return</span>
     <span class='doccomment'>/// `Error::Io`.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// If the file identifier is incorrect (must be &quot;ID3&quot;), then this function will return</span>
-    <span class='doccomment'>/// `Error::InvalidIdentifier`.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// If there is an invalid version (neither versions can be 255), then this function will</span>
-    <span class='doccomment'>/// return `Error::InvalidVersion`.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// If there is an invalid size (it must be greater than 0 and less than 268435456), then this</span>
-    <span class='doccomment'>/// function will return `Error::InvalidSize`.</span>
+    <span class='doccomment'>/// If there is an invalid size (it must be greater than 0), then this function will </span>
+    <span class='doccomment'>/// return `Error::InvalidSize`.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// If there is an unrecognized flag, then this function will return `Error::UnknownFlag`.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_reader</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Read</span><span class='op'>&gt;</span>(<span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Header</span><span class='op'>&gt;</span> {
@@ -274,51 +273,54 @@
 
         <span class='kw'>let</span> <span class='ident'>bytes</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Header</span>::<span class='ident'>read</span>(<span class='ident'>reader</span>));
 
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>header</span>.<span class='ident'>set_identifier</span>(<span class='kw-2'>&amp;</span><span class='ident'>bytes</span>));
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>header</span>.<span class='ident'>set_version</span>(<span class='kw-2'>&amp;</span><span class='ident'>bytes</span>));
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>header</span>.<span class='ident'>set_frame_id</span>(<span class='kw-2'>&amp;</span><span class='ident'>bytes</span>));
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>header</span>.<span class='ident'>set_size</span>(<span class='kw-2'>&amp;</span><span class='ident'>bytes</span>));
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>header</span>.<span class='ident'>set_flags</span>(<span class='kw-2'>&amp;</span><span class='ident'>bytes</span>));
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>header</span>.<span class='ident'>set_status_flags</span>(<span class='kw-2'>&amp;</span><span class='ident'>bytes</span>));
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>header</span>.<span class='ident'>set_encoding_flags</span>(<span class='kw-2'>&amp;</span><span class='ident'>bytes</span>));
 
         <span class='prelude-val'>Ok</span>(<span class='ident'>header</span>)
     }
 
-    <span class='doccomment'>/// Gets the file identifier (currently always &quot;ID3&quot;).</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>identifier</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>; <span class='number'>3</span>] {
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>identifier</span>
+    <span class='doccomment'>/// Gets the frame ID (made out of the characters capital A-Z and 0-9).</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>frame_id</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>; <span class='number'>4</span>] {
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>frame_id</span>
     }
 
-    <span class='doccomment'>/// Gets the version of the ID3v2 tag.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>version</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Version</span> {
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>version</span>
-    }
-
-    <span class='doccomment'>/// Gets the size of the tag (not including the header or footer). This will always be</span>
-    <span class='doccomment'>/// greater than 0 and less than 268435456.</span>
+    <span class='doccomment'>/// Gets the size of the frame (not including the header). This will always be greater than 0.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>size</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>u32</span> {
         <span class='self'>self</span>.<span class='ident'>size</span>
     }
 
-    <span class='doccomment'>/// Gets whether or not unsynchronization is used.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_unsynchronized</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='self'>self</span>.<span class='ident'>flags</span>.<span class='ident'>intersects</span>(<span class='ident'>HEADER_UNSYNC</span>)
+    <span class='doccomment'>/// Gets whether or not to preserve the frame if it is unknown and the tag is altered in any</span>
+    <span class='doccomment'>/// way. This applies to all kinds of alterations, including adding more padding and reordering the frames.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>should_preserve_tag</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>status_flags</span>.<span class='ident'>intersects</span>(<span class='ident'>STATUS_TAG_PRESERVE</span>)
     }
 
-    <span class='doccomment'>/// Gets whether or not the header is followed by an extended header.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>has_extended_header</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='self'>self</span>.<span class='ident'>flags</span>.<span class='ident'>intersects</span>(<span class='ident'>HEADER_EXTENDED</span>)
+    <span class='doccomment'>/// Gets whether or not to preserve the frame if it is unknown and the file, excluding the tag, is altered.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>should_preserve_file</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>status_flags</span>.<span class='ident'>intersects</span>(<span class='ident'>STATUS_FILE_PRESERVE</span>)
     }
 
-    <span class='doccomment'>/// Gets whether or not the tag is in an experimental stage.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_experimental</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='self'>self</span>.<span class='ident'>flags</span>.<span class='ident'>intersects</span>(<span class='ident'>HEADER_EXPERIMENTAL</span>)
+    <span class='doccomment'>/// Gets whether or not the contents of the frame is intended to be read only. Changing the contents might</span>
+    <span class='doccomment'>/// break something, e.g. a signature.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_read_only</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>status_flags</span>.<span class='ident'>intersects</span>(<span class='ident'>STATUS_READ_ONLY</span>)
     }
 
-    <span class='doccomment'>/// Gets whether or not the tag has a footer.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Since this library only supports `v2.3.0`, a `v2.4.0` footer will never be parsed, but we</span>
-    <span class='doccomment'>/// need to know one exists so it can be safely skipped.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>has_footer</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='self'>self</span>.<span class='ident'>flags</span>.<span class='ident'>intersects</span>(<span class='ident'>HEADER_FOOTER</span>)
+    <span class='doccomment'>/// Gets whether or not the frame is compressed.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_compressed</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>encoding_flags</span>.<span class='ident'>intersects</span>(<span class='ident'>ENCODING_COMPRESSION</span>)
+    }
+
+    <span class='doccomment'>/// Gets whether or not the frame is enrypted.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_encrypted</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>encoding_flags</span>.<span class='ident'>intersects</span>(<span class='ident'>ENCODING_ENCRYPTION</span>)
+    }
+
+    <span class='doccomment'>/// Gest whether or not this frame belongs in a group with other frames.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_grouped</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>encoding_flags</span>.<span class='ident'>intersects</span>(<span class='ident'>ENCODING_GROUPING</span>)
     }
 
     <span class='doccomment'>/// Read and return 10 bytes from the reader.</span>
@@ -329,45 +331,41 @@
         <span class='prelude-val'>Ok</span>(<span class='ident'>bytes</span>)
     }
 
-    <span class='doccomment'>/// Set the file identifier (currently always &quot;ID3&quot;).</span>
-    <span class='kw'>fn</span> <span class='ident'>set_identifier</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='ident'>HeaderBytes</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>identifier</span> <span class='op'>=</span> [<span class='ident'>bytes</span>[<span class='number'>0</span>], <span class='ident'>bytes</span>[<span class='number'>1</span>], <span class='ident'>bytes</span>[<span class='number'>2</span>]];
+    <span class='doccomment'>/// Set the frame ID.</span>
+    <span class='kw'>fn</span> <span class='ident'>set_frame_id</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='ident'>HeaderBytes</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>frame_id</span> <span class='op'>=</span> [<span class='ident'>bytes</span>[<span class='number'>0</span>], <span class='ident'>bytes</span>[<span class='number'>1</span>], <span class='ident'>bytes</span>[<span class='number'>2</span>], <span class='ident'>bytes</span>[<span class='number'>3</span>]];
 
-        <span class='kw'>if</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>identifier</span> <span class='op'>!=</span> <span class='string'>b&quot;ID3&quot;</span> {
-            <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>InvalidIdentifier</span>)
-        } <span class='kw'>else</span> {
-            <span class='prelude-val'>Ok</span>(())
-        }
+        <span class='prelude-val'>Ok</span>(())
     }
 
-    <span class='doccomment'>/// Set the major and revision versions.</span>
-    <span class='kw'>fn</span> <span class='ident'>set_version</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='ident'>HeaderBytes</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>version</span>.<span class='ident'>major</span> <span class='op'>=</span> <span class='ident'>bytes</span>[<span class='number'>3</span>];
-        <span class='self'>self</span>.<span class='ident'>version</span>.<span class='ident'>revision</span> <span class='op'>=</span> <span class='ident'>bytes</span>[<span class='number'>4</span>];
-
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>version</span>.<span class='ident'>major</span> <span class='op'>&lt;</span> <span class='number'>0xFF</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>version</span>.<span class='ident'>revision</span> <span class='op'>&lt;</span> <span class='number'>0xFF</span> {
-            <span class='prelude-val'>Ok</span>(())
-        } <span class='kw'>else</span> {
-            <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>InvalidVersion</span>)
-        }
-    }
-
-    <span class='doccomment'>/// Set the tag size (not including header, or footer if present).</span>
+    <span class='doccomment'>/// Set the frame size (not including the header).</span>
     <span class='kw'>fn</span> <span class='ident'>set_size</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='ident'>HeaderBytes</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>use</span> <span class='ident'>utils</span>;
+        <span class='self'>self</span>.<span class='ident'>size</span> <span class='op'>=</span>
+            (<span class='ident'>bytes</span>[<span class='number'>4</span>] <span class='kw'>as</span> <span class='ident'>u32</span>) <span class='op'>&lt;&lt;</span> <span class='number'>24</span> <span class='op'>|</span>
+            (<span class='ident'>bytes</span>[<span class='number'>5</span>] <span class='kw'>as</span> <span class='ident'>u32</span>) <span class='op'>&lt;&lt;</span> <span class='number'>24</span> <span class='op'>|</span>
+            (<span class='ident'>bytes</span>[<span class='number'>6</span>] <span class='kw'>as</span> <span class='ident'>u32</span>) <span class='op'>&lt;&lt;</span> <span class='number'>24</span> <span class='op'>|</span>
+            (<span class='ident'>bytes</span>[<span class='number'>7</span>] <span class='kw'>as</span> <span class='ident'>u32</span>);
 
-        <span class='self'>self</span>.<span class='ident'>size</span> <span class='op'>=</span> <span class='ident'>utils</span>::<span class='ident'>synchsafe_to_u32</span>(<span class='kw-2'>&amp;</span><span class='ident'>bytes</span>[<span class='number'>6</span>..<span class='number'>10</span>]).<span class='ident'>unwrap_or</span>(<span class='number'>0</span>);
-
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>size</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>size</span> <span class='op'>&lt;</span> <span class='number'>0x1000_0000</span> {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>size</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
             <span class='prelude-val'>Ok</span>(())
         } <span class='kw'>else</span> {
             <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>InvalidSize</span>)
         }
     }
 
-    <span class='doccomment'>/// Set the flags of the tag.</span>
-    <span class='kw'>fn</span> <span class='ident'>set_flags</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='ident'>HeaderBytes</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>flags</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>HeaderFlags</span>::<span class='ident'>from_bits</span>(<span class='ident'>bytes</span>[<span class='number'>5</span>]) {
+    <span class='doccomment'>/// Set the status flags of the frame.</span>
+    <span class='kw'>fn</span> <span class='ident'>set_status_flags</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='ident'>HeaderBytes</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>status_flags</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>StatusFlags</span>::<span class='ident'>from_bits</span>(<span class='ident'>bytes</span>[<span class='number'>8</span>]) {
+            <span class='prelude-val'>Some</span>(<span class='ident'>flags</span>) <span class='op'>=&gt;</span> <span class='ident'>flags</span>,
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>UnknownFlag</span>),
+        };
+
+        <span class='prelude-val'>Ok</span>(())
+    }
+
+    <span class='doccomment'>/// Set the encoding flags of the frame.</span>
+    <span class='kw'>fn</span> <span class='ident'>set_encoding_flags</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='ident'>HeaderBytes</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>encoding_flags</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>EncodingFlags</span>::<span class='ident'>from_bits</span>(<span class='ident'>bytes</span>[<span class='number'>9</span>]) {
             <span class='prelude-val'>Some</span>(<span class='ident'>flags</span>) <span class='op'>=&gt;</span> <span class='ident'>flags</span>,
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>UnknownFlag</span>),
         };
@@ -430,13 +428,13 @@
     
 
     <script>
-        window.rootPath = "../../../../";
+        window.rootPath = "../../../../../";
         window.currentCrate = "id3";
         window.playgroundUrl = "";
     </script>
-    <script src="../../../../jquery.js"></script>
-    <script src="../../../../main.js"></script>
+    <script src="../../../../../jquery.js"></script>
+    <script src="../../../../../main.js"></script>
     
-    <script defer src="../../../../search-index.js"></script>
+    <script defer src="../../../../../search-index.js"></script>
 </body>
 </html>

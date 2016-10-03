@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `id3` crate.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, id3">
+    <meta name="description" content="API documentation for the Rust `header` mod in crate `id3`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, header">
 
-    <title>id3 - Rust</title>
+    <title>id3::frame::header - Rust</title>
 
-    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
     
 
     
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'></p><script>window.sidebarCurrent = {name: 'id3', ty: 'mod', relpath: '../'};</script>
+        <p class='location'><a href='../../index.html'>id3</a>::<wbr><a href='../index.html'>frame</a></p><script>window.sidebarCurrent = {name: 'header', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -43,39 +43,35 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>id3</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>id3</a>::<wbr><a href='../index.html'>frame</a>::<wbr><a class='mod' href=''>header</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/id3/src/lib.rs.html#1-7' title='goto source code'>[src]</a></span></h1>
-<h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+               </span><a id='src-451' class='srclink' href='../../../src/id3/src/frame/header/mod.rs.html#1-165' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Types, structs and functions related to reading the header of a frame in an ID3v2 tag.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='frame/index.html'
-                                  title='id3::frame'>frame</a></td>
+                           <td><a class='struct' href='struct.Header.html'
+                                  title='id3::frame::header::Header'>Header</a></td>
                            <td class='docblock short'>
-                                <p>Types, structs and functions related to reading a frame from an ID3v2 tag.</p>
+                                <p>A type representing the header of a frame in an ID3v2 tag.</p>
                            </td>
-                       </tr>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='header/index.html'
-                                  title='id3::header'>header</a></td>
+                           <td><a class='enum' href='enum.Error.html'
+                                  title='id3::frame::header::Error'>Error</a></td>
                            <td class='docblock short'>
-                                <p>Types, structs and functions related to reading an ID3v2 tag header.</p>
+                                <p>A list specifying the errors that can be encountered when constructing a frame header from a reader.</p>
                            </td>
-                       </tr>
+                       </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='tag/index.html'
-                                  title='id3::tag'>tag</a></td>
+                           <td><a class='type' href='type.Result.html'
+                                  title='id3::frame::header::Result'>Result</a></td>
                            <td class='docblock short'>
-                                <p>Types, structs and functions related to reading an ID3v2 tag.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='mod' href='utils/index.html'
-                                  title='id3::utils'>utils</a></td>
-                           <td class='docblock short'>
-                                <p>Utilities related to reading ID3v2 tags.</p>
+                                <p>A specialised <code>Result</code> type for frame header reading operations.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -131,13 +127,13 @@
     
 
     <script>
-        window.rootPath = "../";
+        window.rootPath = "../../../";
         window.currentCrate = "id3";
         window.playgroundUrl = "";
     </script>
-    <script src="../jquery.js"></script>
-    <script src="../main.js"></script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
     
-    <script defer src="../search-index.js"></script>
+    <script defer src="../../../search-index.js"></script>
 </body>
 </html>

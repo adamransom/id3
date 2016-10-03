@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Header` struct in crate `id3`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Header">
+
+    <title>id3::frame::header::Header - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>id3</a>::<wbr><a href='../index.html'>frame</a>::<wbr><a href='index.html'>header</a></p><script>window.sidebarCurrent = {name: 'Header', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../../index.html'>id3</a>::<wbr><a href='../index.html'>frame</a>::<wbr><a href='index.html'>header</a>::<wbr><a class='struct' href=''>Header</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-888' class='srclink' href='../../../src/id3/src/frame/header/mod.rs.html#38-43' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Header {
+    // some fields omitted
+}</pre><div class='docblock'><p>A type representing the header of a frame in an ID3v2 tag.</p>
+
+<h1 id='reference' class='section-header'><a href='#reference'>Reference</a></h1>
+<p><a href="http://id3.org/id3v2.3.0#ID3v2_frame_overview">ID3v2.3 Informal Standard (Section 3.3)</a></p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../../id3/frame/header/struct.Header.html' title='id3::frame::header::Header'>Header</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-894' class='srclink' href='../../../src/id3/src/frame/header/mod.rs.html#45-165' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from_reader' class='method'><code>fn <a href='#method.from_reader' class='fnname'>from_reader</a>&lt;R:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>&gt;(reader: &amp;mut R) -&gt; <a class='type' href='../../../id3/frame/header/type.Result.html' title='id3::frame::header::Result'>Result</a>&lt;<a class='struct' href='../../../id3/frame/header/struct.Header.html' title='id3::frame::header::Header'>Header</a>&gt;</code></h4>
+<div class='docblock'><p>Construct a new frame header from a reader.</p>
+
+<h1 id='guarantees' class='section-header'><a href='#guarantees'>Guarantees</a></h1>
+<p>This function will only ever read 10 bytes from the reader.</p>
+
+<h1 id='errors' class='section-header'><a href='#errors'>Errors</a></h1>
+<p>If there is an error reading the bytes from the reader, then this function will return
+<code>Error::Io</code>.</p>
+
+<p>If there is an invalid size (it must be greater than 0), then this function will 
+return <code>Error::InvalidSize</code>.</p>
+
+<p>If there is an unrecognized flag, then this function will return <code>Error::UnknownFlag</code>.</p>
+</div><h4 id='method.frame_id' class='method'><code>fn <a href='#method.frame_id' class='fnname'>frame_id</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>; 4]</a></code></h4>
+<div class='docblock'><p>Gets the frame ID (made out of the characters capital A-Z and 0-9).</p>
+</div><h4 id='method.size' class='method'><code>fn <a href='#method.size' class='fnname'>size</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<div class='docblock'><p>Gets the size of the frame (not including the header). This will always be greater than 0.</p>
+</div><h4 id='method.should_preserve_tag' class='method'><code>fn <a href='#method.should_preserve_tag' class='fnname'>should_preserve_tag</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gets whether or not to preserve the frame if it is unknown and the tag is altered in any
+way. This applies to all kinds of alterations, including adding more padding and reordering the frames.</p>
+</div><h4 id='method.should_preserve_file' class='method'><code>fn <a href='#method.should_preserve_file' class='fnname'>should_preserve_file</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gets whether or not to preserve the frame if it is unknown and the file, excluding the tag, is altered.</p>
+</div><h4 id='method.is_read_only' class='method'><code>fn <a href='#method.is_read_only' class='fnname'>is_read_only</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gets whether or not the contents of the frame is intended to be read only. Changing the contents might
+break something, e.g. a signature.</p>
+</div><h4 id='method.is_compressed' class='method'><code>fn <a href='#method.is_compressed' class='fnname'>is_compressed</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gets whether or not the frame is compressed.</p>
+</div><h4 id='method.is_encrypted' class='method'><code>fn <a href='#method.is_encrypted' class='fnname'>is_encrypted</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gets whether or not the frame is enrypted.</p>
+</div><h4 id='method.is_grouped' class='method'><code>fn <a href='#method.is_grouped' class='fnname'>is_grouped</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Gest whether or not this frame belongs in a group with other frames.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../../id3/frame/header/struct.Header.html' title='id3::frame::header::Header'>Header</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-877' class='srclink' href='../../../src/id3/src/frame/header/mod.rs.html#37' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../../../id3/frame/header/struct.Header.html' title='id3::frame::header::Header'>Header</a></code></h4>
+<div class='docblock'><p>Returns the &quot;default value&quot; for a type. <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../../id3/frame/header/struct.Header.html' title='id3::frame::header::Header'>Header</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-879' class='srclink' href='../../../src/id3/src/frame/header/mod.rs.html#37' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "id3";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

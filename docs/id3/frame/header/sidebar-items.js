@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error","A list specifying the errors that can be encountered when constructing a frame header from a reader."]],"struct":[["Header","A type representing the header of a frame in an ID3v2 tag."]],"type":[["Result","A specialised `Result` type for frame header reading operations."]]});
