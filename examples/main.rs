@@ -1,24 +1,29 @@
 extern crate id3;
 
 use std::error::Error;
+use std::fs;
 use std::fs::File;
 use std::path::Path;
 
 use id3::tag::Tag;
 
 fn main() {
-    let path = Path::new("examples/test.mp3");
-    let display = path.display();
+    let paths = fs::read_dir("./examples/files").unwrap();
 
-    let mut file = match File::open(&path) {
-        Ok(file) => file,
-        Err(why) => panic!("Couldn't open {}: {}", display, why.description()),
-    };
+    for dir_entry in paths {
+        let path = dir_entry.unwrap().path();
+        let display = path.display();
 
-    let tag = Tag::from_reader(&mut file);
+        let mut file = match File::open(&path) {
+            Ok(file) => file,
+            Err(why) => panic!("Couldn't open {}: {}", display, why.description()),
+        };
 
-    match tag {
-        Ok(tag) => println!("{:?}", tag),
-        Err(err) => println!("{}", err),
+        let tag = Tag::from_reader(&mut file);
+
+        match tag {
+            Ok(tag) => println!("{:?}", tag),
+            Err(err) => println!("{}", err),
+        }
     }
 }
