@@ -19,8 +19,7 @@ pub type TagResult<T> = Result<T, Error>;
 /// [ID3v2.3 Informal Standard](http://id3.org/id3v2.3.0)
 #[derive(Debug, Default)]
 pub struct Tag {
-    /// The header of the tag.
-    pub header: Header,
+    header: Header,
 }
 
 impl Tag {
@@ -36,5 +35,10 @@ impl Tag {
         let tag = Tag { header: header };
 
         Ok(tag)
+    }
+
+    /// Gets the header of the tag.
+    pub fn header(&self) -> &Header {
+        &self.header
     }
 }

@@ -9,19 +9,8 @@ mod error;
 mod version;
 
 bitflags! {
-    /// ID3v2 header flags.
-    ///
-    /// This actually includes one v4.0 flag (`HEADER_FOOTER`) so we are still able to handle v4.0
-    /// tags and safely skip over the footer, without actually parsing it.
-    ///
-    /// # Flags
-    ///
-    /// - `HEADER_UNSYNC` - Indicates whether or not unsynchronisation is used.
-    /// - `HEADER_EXTENDED` - Indicates whether or not the header is followed by an extended header.
-    /// - `HEADER_EXPERIMENTAL` - Indicates whether the tag is in an experimental stage.
-    /// - `HEADER_FOOTER` - Indicates that a footer is present at the very end of the tag.
     #[derive(Default)]
-    pub flags HeaderFlags: u8 {
+    flags HeaderFlags: u8 {
         const HEADER_UNSYNC = 0b10000000,
         const HEADER_EXTENDED = 0b01000000,
         const HEADER_EXPERIMENTAL = 0b00100000,
@@ -29,7 +18,7 @@ bitflags! {
     }
 }
 
-pub type HeaderBytes = [u8; 10];
+type HeaderBytes = [u8; 10];
 /// A specialised `Result` type for header reading operations.
 pub type HeaderResult<T> = Result<T, Error>;
 
@@ -40,15 +29,10 @@ pub type HeaderResult<T> = Result<T, Error>;
 /// [ID3v2.3 Informal Standard (Section 3.1)](http://id3.org/id3v2.3.0#ID3v2_header)
 #[derive(Debug, Default)]
 pub struct Header {
-    /// The file identifier (currently always "ID3").
-    pub identifier: [u8; 3],
-    /// The version of the ID3v2 tag.
-    pub version: Version,
-    /// The flags set for the tag.
-    pub flags: HeaderFlags,
-    /// The size of the tag (not including the header or footer). This must be greater than 0 and
-    /// less than 268435456.
-    pub size: u32,
+    identifier: [u8; 3],
+    version: Version,
+    flags: HeaderFlags,
+    size: u32,
 }
 
 impl Header {
@@ -62,6 +46,9 @@ impl Header {
     ///
     /// If there is an error reading the bytes from the reader, then this function will return
     /// `Error::Io`.
+    ///
+    /// If the file identifier is incorrect (must be "ID3"), then this function will return
+    /// `Error::InvalidIdentifier`.
     ///
     /// If there is an invalid version (neither versions can be 255), then this function will
     /// return `Error::InvalidVersion`.
@@ -81,6 +68,45 @@ impl Header {
         try!(header.set_flags(&bytes));
 
         Ok(header)
+    }
+
+    /// Gets the file identifier (currently always "ID3").
+    pub fn identifier(&self) -> &[u8; 3] {
+        &self.identifier
+    }
+
+    /// Gets the version of the ID3v2 tag.
+    pub fn version(&self) -> &Version {
+        &self.version
+    }
+
+    /// Gets the size of the tag (not including the header or footer). This will always be
+    /// greater than 0 and less than 268435456.
+    pub fn size(&self) -> u32 {
+        self.size
+    }
+
+    /// Gets whether or not unsynchronization is used.
+    pub fn is_unsynchronized(&self) -> bool {
+        self.flags.intersects(HEADER_UNSYNC)
+    }
+
+    /// Gets whether or not the header is followed by an extended header.
+    pub fn has_extended_header(&self) -> bool {
+        self.flags.intersects(HEADER_EXTENDED)
+    }
+
+    /// Gets whether or not the tag is in an experimental stage.
+    pub fn is_experimental(&self) -> bool {
+        self.flags.intersects(HEADER_EXPERIMENTAL)
+    }
+
+    /// Gets whether or not the tag has a footer.
+    ///
+    /// Since this library only supports `v2.3.0`, a `v2.4.0` footer will never be parsed, but we
+    /// need to know one exists so it can be safely skipped.
+    pub fn has_footer(&self) -> bool {
+        self.flags.intersects(HEADER_FOOTER)
     }
 
     /// Read and return 10 bytes from the reader.
