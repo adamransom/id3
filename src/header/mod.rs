@@ -140,7 +140,7 @@ impl Header {
         }
     }
 
-    /// Set the header size (not including header, or footer if present).
+    /// Set the tag size (not including header, or footer if present).
     fn set_size(&mut self, bytes: &HeaderBytes) -> HeaderResult<()> {
         use utils;
 

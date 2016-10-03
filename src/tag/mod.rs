@@ -3,6 +3,7 @@
 use std::io::Read;
 
 use header::Header;
+use frame::Frame;
 use header;
 
 pub use self::error::Error;
@@ -20,6 +21,7 @@ pub type TagResult<T> = Result<T, Error>;
 #[derive(Debug, Default)]
 pub struct Tag {
     header: Header,
+    frame: Frame,
 }
 
 impl Tag {
@@ -29,10 +31,11 @@ impl Tag {
     ///
     /// If there is an error reading the header, then this function will return
     /// `Error::Header`.
-    pub fn from_reader<R: Read>(reader: &mut R) -> TagResult<Tag> {
+    pub fn from_reader<R: Read>(mut reader: &mut R) -> TagResult<Tag> {
         let header = try!(Header::from_reader(&mut reader.take(10)));
+        let frame = try!(Frame::from_reader(&mut reader));
 
-        let tag = Tag { header: header };
+        let tag = Tag { header: header, frame: frame };
 
         Ok(tag)
     }
