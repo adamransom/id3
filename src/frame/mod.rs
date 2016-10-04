@@ -30,8 +30,8 @@ impl Frame {
     ///
     /// If there is an error reading the frame header, then this function will return
     /// `Error::Header`.
-    pub fn from_reader<R: Read>(reader: &mut R) -> Result<Frame> {
-        let header = try!(Header::from_reader(&mut reader.take(10)));
+    pub fn from_reader<R: Read>(reader: &mut R, version: u8) -> Result<Frame> {
+        let header = try!(Header::from_reader(&mut reader.take(10), version));
 
         let frame = Frame { header: header };
 

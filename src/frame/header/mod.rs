@@ -58,13 +58,13 @@ impl Header {
     /// return `Error::InvalidSize`.
     ///
     /// If there is an unrecognized flag, then this function will return `Error::UnknownFlag`.
-    pub fn from_reader<R: Read>(reader: &mut R) -> Result<Header> {
+    pub fn from_reader<R: Read>(reader: &mut R, version: u8) -> Result<Header> {
         let mut header: Self = Default::default();
 
         let bytes = try!(Header::read(reader));
 
         try!(header.set_frame_id(&bytes));
-        try!(header.set_size(&bytes));
+        try!(header.set_size(&bytes, version));
         try!(header.set_status_flags(&bytes));
         try!(header.set_encoding_flags(&bytes));
 
@@ -129,12 +129,19 @@ impl Header {
     }
 
     /// Set the frame size (not including the header).
-    fn set_size(&mut self, bytes: &HeaderBytes) -> Result<()> {
-        self.size =
-            (bytes[4] as u32) << 24 |
-            (bytes[5] as u32) << 24 |
-            (bytes[6] as u32) << 24 |
-            (bytes[7] as u32);
+    fn set_size(&mut self, bytes: &HeaderBytes, version: u8) -> Result<()> {
+        use utils;
+
+        self.size = match version {
+            3 => {
+                (bytes[4] as u32) << 24 |
+                (bytes[5] as u32) << 16 |
+                (bytes[6] as u32) << 8  |
+                (bytes[7] as u32)
+            },
+            4 => utils::synchsafe_to_u32(&bytes[4..8]).unwrap_or(0),
+            _ => 0,
+        };
 
         if self.size > 0 {
             Ok(())
